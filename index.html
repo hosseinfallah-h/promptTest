@@ -5,93 +5,175 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>آزمون مهندسی پرامپت | AItoZed</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- We're keeping Tailwind for general utility classes --><script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;700&display=swap');
+    <!-- Load Vazirmatn font --><style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap');
 
-        :root {
-            --bg-dark: #0a0a1a;
-            --primary-pink: #ec4899;
-            --primary-purple: #a855f7;
-            --border-color: rgba(236, 72, 153, 0.2);
-            --card-bg: rgba(15, 23, 42, 0.7);
-        }
-
+        /* --- Custom Theme Styling (Light Mode Only) --- */
         body {
             font-family: 'Vazirmatn', sans-serif;
-            background-color: var(--bg-dark);
-            color: #e2e8f0;
+            background-color: #f8fafc; /* Very light gray background */
+            color: #111827; /* Default dark text color */
+            line-height: 1.8;
+            scroll-behavior: smooth;
             overflow-x: hidden;
-            background-image: linear-gradient(rgba(236, 72, 153, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(236, 72, 153, 0.05) 1px, transparent 1px);
-            background-size: 30px 30px;
+            font-weight: 500;
+            padding-top: 0;
+            /* Default cursor restored by removing 'cursor: none;' */
         }
 
-        .page-wrapper {
-            @apply min-h-screen flex flex-col;
+        .container {
+            max-width: 1024px;
+            margin: auto;
+            padding: 0 1rem;
         }
 
-        main {
-            flex-grow: 1;
+        /* 1. Header Card (Centered, Blue Gradient) */
+        .header-card {
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            color: white;
+            padding: 4rem 1.5rem;
+            text-align: center;
+            border-radius: 1.5rem;
+            box-shadow: 0 15px 40px rgba(0, 114, 255, 0.45); /* Strong shadow */
+            margin: 0 auto;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(2px);
         }
 
+        .header-card h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (min-width: 640px) {
+            .header-card h1 {
+                font-size: 3rem;
+            }
+        }
+
+        /* 2. Card Styling */
+        .section-card {
+            background-color: #ffffff;
+            border-radius: 1.5rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.5s ease;
+            border: 1px solid #e2e8f0;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .section-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-card:hover {
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* 3. Checkbox & Button Polish (Light Mode) */
+        .checkbox-label:hover span {
+            color: #0072ff;
+        }
+
+        /* 4. Background Particles */
+        #particle-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -10;
+            opacity: 0.3;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(0, 114, 255, 0.5);
+            border-radius: 50%;
+            animation: float-up linear infinite;
+        }
+        
+        @keyframes float-up {
+            0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+        }
+
+        /* Cleanup unused/obsolete styles */
         .gradient-text {
-            background: linear-gradient(90deg, var(--primary-pink), var(--primary-purple));
+            background: linear-gradient(90deg, #0072ff, #00c6ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
         }
 
-        .glass-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(14px);
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-        }
-
-        .glass-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 0 35px rgba(236, 72, 153, 0.25);
-            border-color: rgba(236, 72, 153, 0.5);
+        /* Progress Bar remains fixed at the top */
+        .scroll-progress-container {
+            position: sticky;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: #e2e8f0;
+            z-index: 50;
         }
     </style>
 </head>
 
 <body class="antialiased">
-    <div id="particles-js" class="absolute inset-0 z-0"></div>
-    <div class="page-wrapper relative z-10">
-        <header class="text-center pt-28 pb-20 px-4">
-            <h1 class="text-4xl md:text-6xl font-bold mb-4">
-                <span class="gradient-text">آزمون مهندسی پرامپت</span>
-            </h1>
-            <p class="text-lg md:text-xl text-slate-300 max-w-3xl mx-auto">
-                ۲۰ سؤال برای تمرین ۷ قانون اصلی در طراحی پرامپت‌های مؤثر
-            </p>
-        </header>
+    <!-- Removed: <div id="cursor-glow"></div> -->
 
-        <main class="container mx-auto px-4 py-12">
-            <!-- ✅ آزمون -->
-            <section class="bg-gray-900 text-white py-10 px-6 rounded-xl">
-                <h2 class="text-2xl font-bold mb-6 text-center">آزمون</h2>
-                <div id="questions" class="space-y-8"></div>
-            </section>
-        </main>
+    <!-- Background Particles Container --><div id="particle-container"></div>
 
-        <footer class="text-center py-10 px-4 border-t border-slate-700/50">
-            <p class="gradient-text font-bold text-lg">AItoZed Academy</p>
-            <p class="mt-2">پذیرای سوالات، انتقادات و پیشنهادات شما هستیم</p>
-            <div class="flex justify-center items-center space-x-6 space-x-reverse mt-4">
-                <a href="mailto:hosseinfallah294@gmail.com" class="text-slate-300 hover:text-pink-400"><i
-                        class="fas fa-envelope text-xl"></i></a>
-                <a href="tel:+989014546422" class="text-slate-300 hover:text-pink-400"><i
-                        class="fas fa-phone text-xl"></i></a>
-                <a href="http://fallahh.com" target="_blank" class="text-slate-300 hover:text-pink-400"><i
-                        class="fas fa-globe text-xl"></i></a>
-            </div>
-        </footer>
+    <!-- Scroll Progress Bar --><div class="scroll-progress-container">
+        <div class="scroll-progress-bar bg-[#0072ff]" id="scroll-progress"></div>
     </div>
 
+    <!-- Header Section (Centered Card Structure) --><header class="mx-auto container pt-8 pb-10">
+        <div class="header-card">
+            <h1 class="text-white">آزمون مهندسی پرامپت</h1>
+            <p class="text-xl text-white/90 mt-2">
+                ۲۰ سؤال برای تمرین ۷ قانون اصلی در طراحی پرامپت‌های مؤثر
+            </p>
+            <p>توسط: <a href="https://instagram.com/hosseinfallah_h">حسین فلاح</a></p>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Quiz Section --><section id="test" class="my-12">
+            <h2 class="text-center text-3xl font-bold mb-10 text-[#0072ff] pb-4 border-b border-blue-200/50">
+                آزمون
+            </h2>
+            <div id="questions" class="space-y-8">
+                <!-- Questions will be injected here by JavaScript --></div>
+        </section>
+    </main>
+
+    <!-- Footer Section --><footer id="footer" class="text-center py-10 px-4 border-t border-slate-200 bg-white transition-colors duration-500 mt-12">
+        <p class="font-bold text-xl gradient-text"><a href:"https://instagram.com/aitozed.ir">AItoZed Academy</a></p>
+        <p class="mt-2 text-slate-700">پذیرای سوالات، انتقادات و پیشنهادات شما هستیم</p>
+        <div class="flex justify-center items-center space-x-6 space-x-reverse mt-4">
+            <a href="mailto:hosseinfallah294@gmail.com" class="text-[#0072ff] hover:text-[#00c6ff] transition-colors duration-300"><i
+                    class="fas fa-envelope text-xl"></i></a>
+            <a href="tel:+989014546422" class="text-[#0072ff] hover:text-[#00c6ff] transition-colors duration-300"><i
+                    class="fas fa-phone text-xl"></i></a>
+            <a href="http://aitozed.ir" target="_blank" class="text-[#0072ff] hover:text-[#00c6ff] transition-colors duration-300"><i
+                    class="fas fa-globe text-xl"></i></a>
+        </div>
+    </footer>
+
+
     <script>
+        // --- Quiz Data ---
         const rules = [
             "مشخص کردن نقش ماشین",
             "مشخص کردن نقش خود",
@@ -118,37 +200,100 @@
             { text: "فقط در مورد عوامل موفقیت استارتاپ‌های ایرانی توضیح بده.", answers: [6] },
             { text: "تو یک مشاور مالی هستی. گزارشی در قالب جدول از هزینه‌های ماهانه تهیه کن.", answers: [0, 2, 3] },
             { text: "من یک کارمند تازه‌کار هستم. تو یک مدیر باتجربه هستی. وظایف روز اول کاری را لیست کن.", answers: [0, 1, 2] },
-            { text: "تو یک طنزنویس هستی. یک متن کوتاه با لحن طنز درباره امتحانات بنویس.", answers: [0, 2, 4] },
+            { text: "تو یک طنزنویس هستی. یک متن کوتاه با لحن طنز درباره امتحانات بنinویس.", answers: [0, 2, 4] },
             { text: "اگر اطلاعات محصول موجود نبود، مشابه‌ترین گزینه را پیشنهاد بده.", answers: [2, 5] },
             { text: "تو یک تحلیل‌گر داده هستی. فقط در مورد فروش ماه گذشته توضیح بده.", answers: [0, 2, 6] },
             { text: "من یک کودک هستم. تو یک معلم مهربان هستی. برایم جدول ضرب ۲ را توضیح بده.", answers: [0, 1, 2, 4] }
         ];
+
+        // --- Core Quiz Logic ---
         const container = document.getElementById("questions");
         prompts.forEach((p, i) => {
             const div = document.createElement("div");
-            div.className = "glass-card p-6 rounded-xl";
+            div.className = "section-card";
+            div.id = `q-${i}`;
             div.innerHTML = `
-        <p class="mb-4 font-semibold">سؤال ${i + 1}: ${p.text}</p>
-        <div class="space-y-2">
-          ${rules.map((r, idx) => `
-            <label class="flex items-center space-x-2 space-x-reverse">
-              <input type="checkbox" class="rule-${i} mr-2">
-              <span>${idx + 1}- ${r}</span>
-            </label>
-          `).join("")}
-        </div>
-        <button onclick="showAnswer(${i})" class="mt-4 bg-pink-600 hover:bg-pink-700 px-4 py-2 rounded">
-          نمایش پاسخ
-        </button>
-        <div id="answer-${i}" class="mt-3 hidden text-green-400 font-bold"></div>
-      `;
+                <p class="mb-4 text-lg font-semibold text-gray-900">${i + 1}. ${p.text}</p>
+                <div class="space-y-3 pt-3 border-t border-slate-200">
+                ${rules.map((r, idx) => `
+                    <label class="checkbox-label flex items-center space-x-2 space-x-reverse cursor-pointer text-slate-700 transition-colors duration-200 hover:text-blue-600">
+                    <input type="checkbox" class="rule-${i} w-5 h-5 accent-[#0072ff] rounded-md transition-shadow duration-200 focus:ring-4 focus:ring-blue-300/50" dir="ltr">
+                    <span class="text-base">${idx + 1}- ${r}</span>
+                    </label>
+                `).join("")}
+                </div>
+                <button onclick="showAnswer(${i})" class="mt-6 bg-[#0072ff] hover:bg-[#005cbf] text-white font-bold px-6 py-2.5 rounded-xl transition-all duration-300 shadow-lg shadow-blue-500/30 transform hover:scale-[1.02] active:scale-[0.98]">
+                نمایش پاسخ
+                </button>
+                <div id="answer-${i}" class="mt-4 hidden font-extrabold p-3 text-[#16a34a] bg-[#f0fdf4] rounded-lg border border-[#22c55e]/50 shadow-inner"></div>
+            `;
             container.appendChild(div);
         });
+
         function showAnswer(i) {
             const answerBox = document.getElementById(`answer-${i}`);
             answerBox.classList.remove("hidden");
-            answerBox.innerHTML = "✅ پاسخ درست: " + prompts[i].answers.map(a => (a + 1) + "-" + rules[a]).join(" ، ");
+            answerBox.innerHTML = "✅ پاسخ درست: " + prompts[i].answers.map(a => `<span class="whitespace-nowrap">${a + 1}- ${rules[a]}</span>`).join(" ، ");
         }
+
+        // --- Dynamic Styling and UX Logic ---
+
+        // 1. Scroll Progress Bar
+        const progressBar = document.getElementById('scroll-progress');
+
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            progressBar.style.width = scrolled + "%";
+        });
+
+        // 2. Section Card Fade-in Animation (Intersection Observer)
+        const cards = document.querySelectorAll('.section-card');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        cards.forEach(card => {
+            observer.observe(card);
+        });
+
+        // 3. Particle Generation Logic
+        const particleContainer = document.getElementById('particle-container');
+        const numParticles = 15;
+
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            const size = Math.random() * 6 + 3;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.left = `${Math.random() * 100}vw`;
+            particle.style.animationDuration = `${Math.random() * 15 + 15}s`;
+            particle.style.animationDelay = `-${Math.random() * 20}s`;
+            
+            particle.onanimationend = () => {
+                particle.remove();
+                createParticle();
+            };
+
+            particleContainer.appendChild(particle);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            for (let i = 0; i < numParticles; i++) {
+                createParticle();
+            }
+        });
     </script>
 </body>
 
